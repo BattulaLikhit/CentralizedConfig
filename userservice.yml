@@ -1,0 +1,57 @@
+server:
+  port: 8081  # Port for User Service
+
+spring:
+  application:
+    name: userservice
+  cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
+
+# Eureka Setup
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/   # Register in the centralized service registry i.e. Eureka
+    register-with-eureka: true   # Allows registering the services in Eureka
+    fetch-registry: true    # Allows microservices to communicate with each other
+  instance:
+    prefer-ip-address: true  # Service registers with its IP address instead of the hostname
+
+# Feign Client
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000   # Timeout in ms
+        readTimeout: 5000
+        loggerLevel: FULL  # Logging level for Feign client
+
+# Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"  # Exposes all actuator endpoints
+  endpoint:
+    health:
+      show-details: always  # Show full health status details
+  health:
+    circuitbreakers:   #enables the circuitbreaker object
+      enabled: true
+# Resilience4j Circuit Breaker
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        registerHealthIndicator: true
+        slidingWindowSize: 100
+        minimumNumberOfCalls: 5  # Minimum 5 calls required to calculate threshold
+        failureRateThreshold: 50  # More than 50% failures will open the circuit
+        permittedNumberOfCallsInHalfOpenState: 3  # Allows 3 test calls in half-open state
+        automaticTransitionFromOpenToHalfOpenEnabled: true  # Automatically transition to half-open
+        waitDurationInOpenState: 5000  # Wait 5 seconds before transitioning to half-open
+    instances:
+      myService:
+        baseConfig: default  # Uses default config for this service

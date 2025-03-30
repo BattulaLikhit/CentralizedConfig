@@ -1,0 +1,28 @@
+server:
+  port: 8082  # Port for User Service
+spring:
+  application:
+    name: orderservice
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/   #register in the centralised service registry i.e eurekha
+    register-with-eureka: true   #It allows registering the services in the eurekha services
+    fetch-registry: true    #It allows micrservices to cmmunicate with each other
+  instance:
+    prefer-ip-address: true  #Service register with its ipaddress instead of the hostname
+feign:
+ client:
+  config:
+   default:
+    connect-timeout: 5000   # Timeout in ms
+    read-timeout: 5000
+    logger-level: FULL 
+management:
+ endpoints:
+  web:
+   exposure:
+    include: "*"
+ endpoint:
+   health:
+    show-details: always
